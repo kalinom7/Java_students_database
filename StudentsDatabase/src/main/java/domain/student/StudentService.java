@@ -1,0 +1,50 @@
+package domain.student;
+
+import java.util.UUID;
+
+public class StudentService {
+	private StudentRepository studentRepository;
+
+	public StudentService(StudentRepository repository) {
+		studentRepository = repository;
+	}
+
+	public Student create(String name, String surname, String albumNumber) {
+		Student student = new Student(name, surname, albumNumber);
+		UUID id = student.getId();
+
+		studentRepository.save(id, student);
+		return student;
+	}
+
+	public Student get(UUID id) throws Exception {
+		Student student = studentRepository.get(id);
+		if (student == null) {
+			throw new Exception("student not found");
+		}
+
+		return student;
+	}
+
+	public Student edit(UUID id, String name, String surname, String albumNumber) {
+		Student student;
+		try {
+			student = this.get(id);
+		} catch (Exception e) {
+			e.printStackTrace();
+
+			return null;
+		}
+
+		student.setAlbumNumber(albumNumber);
+		student.setName(surname);
+		student.setSurname(surname);
+
+		studentRepository.save(id, student);
+
+		return student;
+	}
+	public void delete(UUID id) {
+		studentRepository.delete(id);
+	}
+}
