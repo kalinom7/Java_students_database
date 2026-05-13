@@ -135,9 +135,23 @@ class StudentsGroupTest {
 	}
 	@Test
 	void constructorShouldNotAllowInvalidData() {
+
+		// Arrange
+		// create invalid input data
+		String specialization = null;
+		String groupCode = "";
+		String description = "   ";
+
 		// Act + Assert
+		// verify that constructor throws exception
+		// for invalid input data
 		assertThrows(IllegalArgumentException.class, () -> {
-			new StudentsGroup(null, "", "   ");
+
+			// try to create group with invalid data
+			new StudentsGroup(
+					specialization,
+					groupCode,
+					description);
 		});
 	}
 }
