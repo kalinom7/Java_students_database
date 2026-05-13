@@ -81,19 +81,21 @@ class StudentsGroupTest {
 	}
 
 	@Test
-	void studentsSetShouldCurrentlyAllowNullStudentId() {
+	void studentsSetShouldNotAllowNullStudentId() {
 
 		// Arrange
 		// create new group
-		StudentsGroup group = new StudentsGroup("Cloud", "C1", "Test group");
+		StudentsGroup group = new StudentsGroup(
+				"Cloud",
+				"C1",
+				"Test group");
 
-		// Act
-		// add null directly to students set
-		group.getStudentsInGroup().add(null);
+		// Act + Assert
+		// verify that adding null student id throws exception
+		assertThrows(IllegalArgumentException.class, () -> {
 
-		// Assert
-		// this test documents current behavior
-		assertTrue(group.getStudentsInGroup().contains(null));
+			group.getStudentsInGroup().add(null);
+		});
 	}
 	@Test
 	void constructorShouldSetGroupData() {

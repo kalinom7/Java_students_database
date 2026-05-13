@@ -193,7 +193,11 @@ class StudentsGroupServiceTest {
 			service.get(group.getId());
 		});
 	}
-
+	
+	/* TODO: consider changing this test behavior
+	 * when delete() starts handling non-existing IDs explicitly
+	*/
+	
 	@Test
 	void deleteShouldNotThrowExceptionWhenGroupDoesNotExist() {
 
