@@ -37,7 +37,7 @@ public class StudentService {
 		}
 
 		student.setAlbumNumber(albumNumber);
-		student.setName(surname);
+		student.setName(name);
 		student.setSurname(surname);
 
 		studentRepository.save(id, student);

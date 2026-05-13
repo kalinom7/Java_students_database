@@ -1,5 +1,7 @@
 package domain.studentsGroup;
 
+
+import java.util.Set;
 import java.util.UUID;
 
 //TODO: implement addStudent method that adds student to group
@@ -19,11 +21,20 @@ public class StudentsGroupService {
 	}
 	
 	public StudentsGroup get(UUID id) throws Exception {
-		StudentsGroup studentGroup = studentsGroupRepository.get(id);
-		if(studentGroup == null) {
+		StudentsGroup studentsGroup = studentsGroupRepository.get(id);
+		if(studentsGroup == null) {
 			throw new Exception("student group not found");
 		}
-		return studentGroup;
+		return studentsGroup;
+	}
+	
+	public StudentsGroup addStudent(UUID groupId, UUID studentId) {
+		StudentsGroup studentsGroup = studentsGroupRepository.get(groupId);
+		
+		studentsGroup.getStudentsInGroup().add(studentId);
+		studentsGroupRepository.save(groupId, studentsGroup);
+		
+		return studentsGroup;
 	}
 	
 	public StudentsGroup edit(UUID id, String specialization, String groupCode, String description) {
