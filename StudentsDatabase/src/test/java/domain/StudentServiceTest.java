@@ -22,89 +22,68 @@ class StudentServiceTest {
 		studentService = new StudentService(new InMemoStudentRepository());
 	}
 
-	// Does the system allow digits in the name
-	@Test
-	void create_shouldAllowDigitsInName() {
-		Student student = studentService.create("Jan123", "Kowalski", "123456");
+    // Name should not contain digits
+    @Test
+    void create_nameShouldNotContainDigits() {
 
-		assertEquals("Jan123", student.getName());
-	}
+        Student student = studentService.create("Jan123", "Kowalski", "123456");
 
-	// Name should not contain digits
-	@Test
-	void create_nameShouldNotContainDigits() {
+        assertFalse(student.getName().matches(".*\\d.*"),
+                "Name must not contain digits");
+    }
 
-		Student student = studentService.create("Jan123", "Kowalski", "123456");
+    // Surname should not contain digits
+    @Test
+    void create_surnameShouldNotContainDigits() {
 
-		assertFalse(student.getName().matches(".*\\d.*"));
-	}
+        Student student = studentService.create("Jan", "Kowalski123", "123456");
 
-	// Does the system allow digits in surname
-	@Test
-	void create_shouldAllowDigitsInSurname() {
+        assertFalse(student.getSurname().matches(".*\\d.*"),
+                "Surname must not contain digits");
+    }
 
-		Student student = studentService.create("Jan", "Kowalski123", "123456");
+    // Album number must contain only digits
+    @Test
+    void create_albumNumberShouldContainOnlyDigits() {
 
-		assertEquals("Kowalski123", student.getSurname());
-	}
+        Student student = studentService.create("Jan", "Kowalski", "ABC123");
 
-	// Surname should not contain digits
-	@Test
-	void create_surnameShouldNotContainDigits() {
+        assertTrue(student.getAlbumNumber().matches("\\d+"),
+                "Album number must contain only digits");
+    }
 
-		Student student = studentService.create("Jan", "Kowalski123", "123456");
+    // Empty strings should not be allowed
+    @Test
+    void create_shouldRejectEmptyStrings() {
 
-		assertFalse(student.getSurname().matches(".*\\d.*"));
-	}
+        Student student = studentService.create("", "", "");
 
-	// Does the system allow letters in album number
-	@Test
-	void create_shouldAllowLettersInAlbumNumber() {
+        assertFalse(student.getName().isBlank(), "Name should not be empty");
+        assertFalse(student.getSurname().isBlank(), "Surname should not be empty");
+        assertFalse(student.getAlbumNumber().isBlank(), "Album number should not be empty");
+    }
 
-		Student student = studentService.create("Jan", "Kowalski", "ABC123");
+    // Whitespace-only strings should not be allowed
+    @Test
+    void create_shouldRejectWhitespaceOnlyStrings() {
 
-		assertEquals("ABC123", student.getAlbumNumber());
-	}
+        Student student = studentService.create("   ", "   ", "   ");
 
-	// Album number should contain only digits
-	@Test
-	void create_albumNumberShouldContainOnlyDigits() {
+        assertFalse(student.getName().isBlank(), "Name should not be whitespace only");
+        assertFalse(student.getSurname().isBlank(), "Surname should not be whitespace only");
+        assertFalse(student.getAlbumNumber().isBlank(), "Album number should not be whitespace only");
+    }
 
-		Student student = studentService.create("Jan", "Kowalski", "ABC123");
+    // Null values should not be allowed
+    @Test
+    void create_shouldRejectNullValues() {
 
-		assertTrue(student.getAlbumNumber().matches("\\d+"));
-	}
+        Student student = studentService.create(null, null, null);
 
-	// Does the system allow empty strings
-	@Test
-	void create_shouldAllowEmptyStrings() {
-
-		Student student = studentService.create("", "", "");
-
-		assertEquals("", student.getName());
-		assertEquals("", student.getSurname());
-		assertEquals("", student.getAlbumNumber());
-	}
-
-	// Does the system allow whitespace-only strings
-	@Test
-	void create_shouldAllowWhitespaceStrings() {
-
-		Student student = studentService.create("   ", "   ", "   ");
-
-		assertEquals("   ", student.getName());
-	}
-
-	// Does the system allow null values
-	@Test
-	void create_shouldAllowNullValues() {
-
-		Student student = studentService.create(null, null, null);
-
-		assertNull(student.getName());
-		assertNull(student.getSurname());
-		assertNull(student.getAlbumNumber());
-	}
+        assertNotNull(student.getName(), "Name should not be null");
+        assertNotNull(student.getSurname(), "Surname should not be null");
+        assertNotNull(student.getAlbumNumber(), "Album number should not be null");
+    }
 
 	// create() - should return a student with correct data
 	@Test

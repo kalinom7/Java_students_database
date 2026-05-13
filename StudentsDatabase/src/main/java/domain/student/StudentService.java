@@ -8,7 +8,7 @@ public class StudentService {
 	public StudentService(StudentRepository repository) {
 		studentRepository = repository;
 	}
-
+	
 	public Student create(String name, String surname, String albumNumber) {
 		Student student = new Student(name, surname, albumNumber);
 		UUID id = student.getId();
