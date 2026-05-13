@@ -37,13 +37,17 @@ public class StudentService {
 		}
 
 		student.setAlbumNumber(albumNumber);
-		student.setName(surname);
+		student.setName(name);
 		student.setSurname(surname);
 
 		studentRepository.save(id, student);
 
 		return student;
 	}
+	public StudentRepository getStudentRepository() {
+		return studentRepository;
+	}
+
 	public void delete(UUID id) {
 		studentRepository.delete(id);
 	}
