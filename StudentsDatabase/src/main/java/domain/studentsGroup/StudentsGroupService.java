@@ -1,6 +1,7 @@
 package domain.studentsGroup;
 
 import java.util.UUID;
+import language.LanguageManager;
 
 //TODO: implement addStudent method that adds student to group
 public class StudentsGroupService {
@@ -21,7 +22,7 @@ public class StudentsGroupService {
 	public StudentsGroup get(UUID id) throws Exception {
 		StudentsGroup studentGroup = studentsGroupRepository.get(id);
 		if(studentGroup == null) {
-			throw new Exception("student group not found");
+			throw new Exception(LanguageManager.get("error.group.notFound"));
 		}
 		return studentGroup;
 	}

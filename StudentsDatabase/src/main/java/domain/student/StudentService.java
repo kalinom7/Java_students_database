@@ -2,6 +2,8 @@ package domain.student;
 
 import java.util.UUID;
 
+import language.LanguageManager;
+
 public class StudentService {
 	private StudentRepository studentRepository;
 
@@ -20,7 +22,7 @@ public class StudentService {
 	public Student get(UUID id) throws Exception {
 		Student student = studentRepository.get(id);
 		if (student == null) {
-			throw new Exception("student not found");
+			throw new Exception(LanguageManager.get("error.student.notFound"));
 		}
 
 		return student;
