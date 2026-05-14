@@ -116,7 +116,7 @@ class StudentServiceTest {
 
 	@Test
 	void create_shouldAssignUniqueId() throws Exception {
-
+	
 		// Act
 		Student s1 = studentService.create("Jan", "Kowalski", "111111");
 		Student s2 = studentService.create("Anna", "Nowak", "222222");
