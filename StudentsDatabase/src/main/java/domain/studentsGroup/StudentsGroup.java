@@ -30,7 +30,19 @@ public class StudentsGroup {
 	public UUID getId() {
 		return id;
 	}
+	//GETTERS
+	public String getSpecialization() {
+		return specialization;
+	}
 
+	public String getGroupCode() {
+		return groupCode;
+	}
+
+	public String getDescription() {
+		return description;
+	}
+	//SETTERS
 	public void setSpecialization(String specialization) {
 		this.specialization = specialization;
 	}
