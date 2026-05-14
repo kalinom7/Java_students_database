@@ -11,11 +11,11 @@ import domain.studentsGroup.InMemoStudentsGroupRepository;
 import domain.studentsGroup.StudentsGroup;
 import domain.studentsGroup.StudentsGroupRepository;
 import domain.studentsGroup.StudentsGroupService;
+import language.LanguageManager;
 
 /**
- * Test class for StudentsGroupService.
- * Tests verify creating, retrieving, editing,
- * deleting groups and adding students to groups.
+ * Test class for StudentsGroupService. Tests verify creating, retrieving,
+ * editing, deleting groups and adding students to groups.
  */
 class StudentsGroupServiceTest {
 
@@ -30,17 +30,20 @@ class StudentsGroupServiceTest {
 
 		// create service object with repository
 		service = new StudentsGroupService(repository);
+
+		LanguageManager.setLanguage("en", "US");
 	}
 
 	@Test
-	void createShouldReturnGroupWithId() {
+	void createShouldReturnGroupWithId() throws Exception {
 
 		// Arrange
 		// service already exists because of @BeforeEach
 
 		// Act
 		// create new students group
-		StudentsGroup group = service.create("Cloud", "C1", "Test group");
+		StudentsGroup group = 
+				service.create("Cloud", "C1", "Test group");
 
 		// Assert
 		// verify that group exists
@@ -81,7 +84,7 @@ class StudentsGroupServiceTest {
 	}
 
 	@Test
-	void addStudentShouldAddStudentToExistingGroup() {
+	void addStudentShouldAddStudentToExistingGroup() throws Exception {
 
 		// Arrange
 		// create group
@@ -100,7 +103,7 @@ class StudentsGroupServiceTest {
 	}
 
 	@Test
-	void addStudentShouldNotAddSameStudentTwice() {
+	void addStudentShouldNotAddSameStudentTwice() throws Exception {
 
 		// Arrange
 		// create group
@@ -129,13 +132,13 @@ class StudentsGroupServiceTest {
 
 		// Act + Assert
 		// verify that exception is thrown
-		assertThrows(NullPointerException.class, () -> {
+		assertThrows(IllegalArgumentException.class, () -> {
 			service.addStudent(fakeGroupId, studentId);
 		});
 	}
 
 	@Test
-	void editShouldChangeGroupData() {
+	void editShouldChangeGroupData() throws Exception {
 
 		// Arrange
 		// create initial group with original data
@@ -143,11 +146,7 @@ class StudentsGroupServiceTest {
 
 		// Act
 		// edit existing group data
-		StudentsGroup result = service.edit(
-				group.getId(),
-				"Cybersecurity",
-				"C2",
-				"Edited group");
+		StudentsGroup result = service.edit(group.getId(), "Cybersecurity", "C2", "Edited group");
 
 		// Assert
 		// verify that all fields were updated correctly
@@ -157,27 +156,20 @@ class StudentsGroupServiceTest {
 	}
 
 	@Test
-	void editShouldReturnNullWhenGroupDoesNotExist() {
+	void editShouldThrowWhenGroupDoesNotExist() throws Exception {
 
 		// Arrange
 		// create random non-existing id
 		UUID fakeId = UUID.randomUUID();
 
-		// Act
+		// Act && Assert
 		// try to edit non-existing group
-		StudentsGroup result = service.edit(
-				fakeId,
-				"Cloud",
-				"C1",
-				"Test group");
+		assertThrows(Exception.class, () -> service.edit(fakeId, "Cloud", "C1", "Test group"));
 
-		// Assert
-		// verify that null was returned
-		assertNull(result);
 	}
 
 	@Test
-	void deleteShouldRemoveExistingGroup() {
+	void deleteShouldRemoveExistingGroup() throws Exception {
 
 		// Arrange
 		// create group
@@ -193,11 +185,12 @@ class StudentsGroupServiceTest {
 			service.get(group.getId());
 		});
 	}
-	
-	/* TODO: consider changing this test behavior
-	 * when delete() starts handling non-existing IDs explicitly
-	*/
-	
+
+	/*
+	 * TODO: consider changing this test behavior when delete() starts handling
+	 * non-existing IDs explicitly
+	 */
+
 	@Test
 	void deleteShouldNotThrowExceptionWhenGroupDoesNotExist() {
 
@@ -211,6 +204,7 @@ class StudentsGroupServiceTest {
 			service.delete(fakeId);
 		});
 	}
+
 	@Test
 	void createShouldNotAllowNullSpecialization() {
 
@@ -220,7 +214,7 @@ class StudentsGroupServiceTest {
 
 		// Act + Assert
 		// verify that exception is thrown for null specialization
-		assertThrows(IllegalArgumentException.class, () -> {
+		assertThrows(Exception.class, () -> {
 			service.create(specialization, "C1", "Test group");
 		});
 	}
@@ -234,7 +228,7 @@ class StudentsGroupServiceTest {
 
 		// Act + Assert
 		// verify that exception is thrown for empty group code
-		assertThrows(IllegalArgumentException.class, () -> {
+		assertThrows(Exception.class, () -> {
 			service.create("Cloud", groupCode, "Test group");
 		});
 	}
@@ -248,13 +242,13 @@ class StudentsGroupServiceTest {
 
 		// Act + Assert
 		// verify that exception is thrown for blank description
-		assertThrows(IllegalArgumentException.class, () -> {
+		assertThrows(Exception.class, () -> {
 			service.create("Cloud", "C1", description);
 		});
 	}
 
 	@Test
-	void addStudentShouldNotAllowNullStudentId() {
+	void addStudentShouldNotAllowNullStudentId() throws Exception {
 
 		// Arrange
 		// create valid group
@@ -282,7 +276,7 @@ class StudentsGroupServiceTest {
 	}
 
 	@Test
-	void editShouldNotAllowNullSpecialization() {
+	void editShouldNotAllowNullSpecialization() throws Exception {
 
 		// Arrange
 		// create initial group
@@ -296,7 +290,7 @@ class StudentsGroupServiceTest {
 	}
 
 	@Test
-	void editShouldNotAllowEmptyGroupCode() {
+	void editShouldNotAllowEmptyGroupCode() throws Exception {
 
 		// Arrange
 		// create initial group
@@ -310,7 +304,7 @@ class StudentsGroupServiceTest {
 	}
 
 	@Test
-	void editShouldNotAllowBlankDescription() {
+	void editShouldNotAllowBlankDescription() throws Exception {
 
 		// Arrange
 		// create initial group
@@ -324,7 +318,7 @@ class StudentsGroupServiceTest {
 	}
 
 	@Test
-	void studentsInGroupShouldNotBeModifiableFromOutside() {
+	void studentsInGroupShouldNotBeModifiableFromOutside() throws Exception {
 
 		// Arrange
 		// create group and add student

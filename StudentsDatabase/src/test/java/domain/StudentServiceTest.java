@@ -6,6 +6,7 @@ import org.junit.jupiter.api.Test;
 import domain.student.InMemoStudentRepository;
 import domain.student.Student;
 import domain.student.StudentService;
+import language.LanguageManager;
 
 import java.util.UUID;
 
@@ -13,238 +14,233 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class StudentServiceTest {
 
-    private StudentService studentService;
+	private StudentService studentService;
+
+	@BeforeEach
+	void setUp() {
+		LanguageManager.setLanguage("en", "US");
+		studentService = new StudentService(new InMemoStudentRepository());
+	}
+
+	@Test
+	void create_nameShouldNotContainDigits() throws Exception {
+
+		// Arrange
+		String name = "Jan123";
+
+		// Act && Assert
+		assertThrows(Exception.class, () -> studentService.create(name, "Kowalski", "123456"));
+
+	}
+
+	@Test
+	void create_surnameShouldNotContainDigits() throws Exception {
+
+		// Arrange
+		String surname = "Kowalski123";
+
+		// Act && Assert
+		assertThrows(Exception.class, () -> studentService.create("Jan", surname, "123456"));
+	}
+
+	@Test
+	void create_shouldThrowIfAlbumNuberContainsLetters() throws Exception {
+
+		// Arrange
+		String albumNumber = "ABC123";
+
+		// Act && Assert
+		assertThrows(Exception.class, () -> studentService.create("Jan", "Kowalski", albumNumber));
+	}
+
+	@Test
+	void create_shouldRejectEmptyStrings() throws Exception {
+
+		// Act && Assert
+		assertThrows(Exception.class, () -> studentService.create("", "", ""));
+		assertThrows(Exception.class, () -> studentService.create("Jan", "", ""));
+		assertThrows(Exception.class, () -> studentService.create("Jan", "Kowalski", ""));
+		assertThrows(Exception.class, () -> studentService.create("Jan", "", "2241"));
+		assertThrows(Exception.class, () -> studentService.create("", "Kowalski", "2241"));
+		assertThrows(Exception.class, () -> studentService.create("", "Kowalski", ""));
+		assertThrows(Exception.class, () -> studentService.create("", "", "2241"));
+	}
+
+	@Test
+	void create_shouldRejectWhitespaceOnlyStrings() throws Exception {
+
+		// Act && Assert
+		assertThrows(Exception.class, () -> studentService.create("	", "  ", " "));
+		assertThrows(Exception.class, () -> studentService.create("Jan", " ", "  "));
+		assertThrows(Exception.class, () -> studentService.create("Jan", "Kowalski", "  "));
+		assertThrows(Exception.class, () -> studentService.create("Jan", "  ", "2241"));
+		assertThrows(Exception.class, () -> studentService.create(" ", "Kowalski", "2241"));
+		assertThrows(Exception.class, () -> studentService.create(" ", "Kowalski", "  "));
+		assertThrows(Exception.class, () -> studentService.create("  ", " ", "2241"));
+	}
+
+	@Test
+	void create_shouldThrowException_whenAnyFieldIsNull() {
+		// Arrange
+		String name = "Jan";
+		String surname = "Kowalski";
+		String album = "123456";
+
+		// Act && Assert
+		assertThrows(Exception.class, () -> studentService.create(null, null, null));
+		assertThrows(Exception.class, () -> studentService.create(name, null, null));
+		assertThrows(Exception.class, () -> studentService.create(null, surname, null));
+		assertThrows(Exception.class, () -> studentService.create(null, null, album));
+		assertThrows(Exception.class, () -> studentService.create(name, surname, null));
+		assertThrows(Exception.class, () -> studentService.create(name, null, album));
+		assertThrows(Exception.class, () -> studentService.create(null, surname, album));
+	}
+
+	@Test
+	void create_shouldReturnStudentWithCorrectData() throws Exception {
+
+		// Arrange
+		String name = "Jan";
+		String surname = "Kowalski";
+		String album = "123456";
+
+		// Act
+		Student student = studentService.create(name, surname, album);
+
+		// Assert
+		assertNotNull(student);
+		assertEquals(name, student.getName());
+		assertEquals(surname, student.getSurname());
+		assertEquals(album, student.getAlbumNumber());
+	}
+
+	@Test
+	void create_shouldAssignUniqueId() throws Exception {
 
-    @BeforeEach
-    void setUp() {
-        studentService = new StudentService(new InMemoStudentRepository());
-    }
+		// Act
+		Student s1 = studentService.create("Jan", "Kowalski", "111111");
+		Student s2 = studentService.create("Anna", "Nowak", "222222");
 
-    @Test
-    void create_nameShouldNotContainDigits() {
+		// Assert
+		assertNotNull(s1.getId());
+		assertNotNull(s2.getId());
+		assertNotEquals(s1.getId(), s2.getId());
+	}
 
-        // Arrange
-        String name = "Jan123";
+	@Test
+	void create_shouldPersistStudentInRepository() throws Exception {
 
-        // Act
-        Student student = studentService.create(name, "Kowalski", "123456");
+		// Act
+		Student created = studentService.create("Jan", "Kowalski", "123456");
+		Student fetched = studentService.get(created.getId());
 
-        // Assert
-        assertFalse(student.getName().matches(".*\\d.*"),
-                "Name must not contain digits");
-    }
+		// Assert
+		assertNotNull(fetched);
+		assertEquals(created.getId(), fetched.getId());
+	}
 
-    @Test
-    void create_surnameShouldNotContainDigits() {
+	@Test
+	void get_shouldThrowExceptionForUnknownId() {
 
-        // Arrange
-        String surname = "Kowalski123";
+		// Arrange
+		UUID randomId = UUID.randomUUID();
 
-        // Act
-        Student student = studentService.create("Jan", surname, "123456");
+		// Act + Assert
+		Exception exception = assertThrows(Exception.class, () -> studentService.get(randomId));
 
-        // Assert
-        assertFalse(student.getSurname().matches(".*\\d.*"),
-                "Surname must not contain digits");
-    }
+		assertEquals("Student not found", exception.getMessage());
+	}
 
-    @Test
-    void create_albumNumberShouldContainOnlyDigits() {
+	@Test
+	void get_shouldReturnCorrectStudent() throws Exception {
 
-        // Arrange
-        String albumNumber = "ABC123";
+		// Act
+		Student created = studentService.create("Anna", "Nowak", "999999");
+		Student fetched = studentService.get(created.getId());
 
-        // Act
-        Student student = studentService.create("Jan", "Kowalski", albumNumber);
+		// Assert
+		assertEquals("Anna", fetched.getName());
+		assertEquals("Nowak", fetched.getSurname());
+		assertEquals("999999", fetched.getAlbumNumber());
+	}
 
-        // Assert
-        assertTrue(student.getAlbumNumber().matches("\\d+"),
-                "Album number must contain only digits");
-    }
+	@Test
+	void edit_shouldUpdateAllFields() throws Exception {
 
-    @Test
-    void create_shouldRejectEmptyStrings() {
+		// Act
+		Student created = studentService.create("Jan", "Kowalski", "111111");
 
-        // Act
-        Student student = studentService.create("", "", "");
+		studentService.edit(created.getId(), "Piotr", "Wiśniewski", "999999");
 
-        // Assert
-        assertFalse(student.getName().isBlank(), "Name should not be empty");
-        assertFalse(student.getSurname().isBlank(), "Surname should not be empty");
-        assertFalse(student.getAlbumNumber().isBlank(), "Album number should not be empty");
-    }
+		Student updated = studentService.get(created.getId());
 
-    @Test
-    void create_shouldRejectWhitespaceOnlyStrings() {
+		// Assert
+		assertEquals("Piotr", updated.getName());
+		assertEquals("Wiśniewski", updated.getSurname());
+		assertEquals("999999", updated.getAlbumNumber());
+	}
 
-        // Act
-        Student student = studentService.create("   ", "   ", "   ");
+	@Test
+	void edit_shouldThrowForUnknownId() throws Exception {
 
-        // Assert
-        assertFalse(student.getName().isBlank(), "Name should not be whitespace only");
-        assertFalse(student.getSurname().isBlank(), "Surname should not be whitespace only");
-        assertFalse(student.getAlbumNumber().isBlank(), "Album number should not be whitespace only");
-    }
+		// Arrange
+		UUID randomId = UUID.randomUUID();
 
-    @Test
-    void create_shouldRejectNullValues() {
+		// Assert
+		assertThrows(Exception.class, () -> {
+			studentService.edit(randomId, "Jan", "Kowalski", "111111");
+		});
+	}
 
-        // Act
-        Student student = studentService.create(null, null, null);
+	@Test
+	void edit_shouldNotChangeStudentId() throws Exception {
 
-        // Assert
-        assertNotNull(student.getName(), "Name should not be null");
-        assertNotNull(student.getSurname(), "Surname should not be null");
-        assertNotNull(student.getAlbumNumber(), "Album number should not be null");
-    }
+		// Act
+		Student created = studentService.create("Jan", "Kowalski", "111111");
+		UUID originalId = created.getId();
 
-    @Test
-    void create_shouldReturnStudentWithCorrectData() {
+		studentService.edit(originalId, "Piotr", "Wiśniewski", "999999");
 
-        // Arrange
-        String name = "Jan";
-        String surname = "Kowalski";
-        String album = "123456";
+		Student updated = studentService.get(originalId);
 
-        // Act
-        Student student = studentService.create(name, surname, album);
+		// Assert
+		assertEquals(originalId, updated.getId());
+	}
 
-        // Assert
-        assertNotNull(student);
-        assertEquals(name, student.getName());
-        assertEquals(surname, student.getSurname());
-        assertEquals(album, student.getAlbumNumber());
-    }
+	@Test
+	void delete_shouldRemoveStudentFromRepository() throws Exception {
 
-    @Test
-    void create_shouldAssignUniqueId() {
+		// Act
+		Student created = studentService.create("Jan", "Kowalski", "123456");
+		UUID id = created.getId();
 
-        // Act
-        Student s1 = studentService.create("Jan", "Kowalski", "111111");
-        Student s2 = studentService.create("Anna", "Nowak", "222222");
+		studentService.delete(id);
 
-        // Assert
-        assertNotNull(s1.getId());
-        assertNotNull(s2.getId());
-        assertNotEquals(s1.getId(), s2.getId());
-    }
+		// Assert
+		assertThrows(Exception.class, () -> studentService.get(id));
+	}
 
-    @Test
-    void create_shouldPersistStudentInRepository() throws Exception {
+	@Test
+	void delete_nonExistentId_shouldNotThrow() {
 
-        // Act
-        Student created = studentService.create("Jan", "Kowalski", "123456");
-        Student fetched = studentService.get(created.getId());
+		// Arrange
+		UUID randomId = UUID.randomUUID();
 
-        // Assert
-        assertNotNull(fetched);
-        assertEquals(created.getId(), fetched.getId());
-    }
+		// Act + Assert
+		assertDoesNotThrow(() -> studentService.delete(randomId));
+	}
 
-    @Test
-    void get_shouldThrowExceptionForUnknownId() {
+	@Test
+	void delete_shouldRemoveOnlyTargetStudent() throws Exception {
 
-        // Arrange
-        UUID randomId = UUID.randomUUID();
+		// Act
+		Student s1 = studentService.create("Jan", "Kowalski", "111111");
+		Student s2 = studentService.create("Anna", "Nowak", "222222");
 
-        // Act + Assert
-        Exception exception = assertThrows(Exception.class,
-                () -> studentService.get(randomId));
+		studentService.delete(s1.getId());
 
-        assertEquals("student not found", exception.getMessage());
-    }
-
-    @Test
-    void get_shouldReturnCorrectStudent() throws Exception {
-
-        // Act
-        Student created = studentService.create("Anna", "Nowak", "999999");
-        Student fetched = studentService.get(created.getId());
-
-        // Assert
-        assertEquals("Anna", fetched.getName());
-        assertEquals("Nowak", fetched.getSurname());
-        assertEquals("999999", fetched.getAlbumNumber());
-    }
-
-    @Test
-    void edit_shouldUpdateAllFields() throws Exception {
-
-        // Act
-        Student created = studentService.create("Jan", "Kowalski", "111111");
-
-        studentService.edit(created.getId(), "Piotr", "Wiśniewski", "999999");
-
-        Student updated = studentService.get(created.getId());
-
-        // Assert
-        assertEquals("Piotr", updated.getName());
-        assertEquals("Wiśniewski", updated.getSurname());
-        assertEquals("999999", updated.getAlbumNumber());
-    }
-
-    @Test
-    void edit_shouldReturnNullForUnknownId() {
-
-        // Arrange
-        UUID randomId = UUID.randomUUID();
-
-        // Act
-        Student result = studentService.edit(randomId, "Jan", "Kowalski", "111111");
-
-        // Assert
-        assertNull(result);
-    }
-
-    @Test
-    void edit_shouldNotChangeStudentId() throws Exception {
-
-        // Act
-        Student created = studentService.create("Jan", "Kowalski", "111111");
-        UUID originalId = created.getId();
-
-        studentService.edit(originalId, "Piotr", "Wiśniewski", "999999");
-
-        Student updated = studentService.get(originalId);
-
-        // Assert
-        assertEquals(originalId, updated.getId());
-    }
-
-    @Test
-    void delete_shouldRemoveStudentFromRepository() {
-
-        // Act
-        Student created = studentService.create("Jan", "Kowalski", "123456");
-        UUID id = created.getId();
-
-        studentService.delete(id);
-
-        // Assert
-        assertThrows(Exception.class, () -> studentService.get(id));
-    }
-
-    @Test
-    void delete_nonExistentId_shouldNotThrow() {
-
-        // Arrange
-        UUID randomId = UUID.randomUUID();
-
-        // Act + Assert
-        assertDoesNotThrow(() -> studentService.delete(randomId));
-    }
-
-    @Test
-    void delete_shouldRemoveOnlyTargetStudent() throws Exception {
-
-        // Act
-        Student s1 = studentService.create("Jan", "Kowalski", "111111");
-        Student s2 = studentService.create("Anna", "Nowak", "222222");
-
-        studentService.delete(s1.getId());
-
-        // Assert
-        assertThrows(Exception.class, () -> studentService.get(s1.getId()));
-        assertDoesNotThrow(() -> studentService.get(s2.getId()));
-    }
+		// Assert
+		assertThrows(Exception.class, () -> studentService.get(s1.getId()));
+		assertDoesNotThrow(() -> studentService.get(s2.getId()));
+	}
 }

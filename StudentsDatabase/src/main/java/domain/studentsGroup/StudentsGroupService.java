@@ -13,7 +13,11 @@ public class StudentsGroupService {
 		this.studentsGroupRepository = repository;
 	}
 	
-	public StudentsGroup create(String specialization, String groupCode, String description) {
+	public StudentsGroup create(String specialization, String groupCode, String description) throws IllegalArgumentException {
+		if (specialization.trim().isEmpty() || specialization.isBlank() || groupCode.trim().isEmpty() || groupCode.isBlank()
+				|| description.trim().isEmpty() || description.isBlank()) {
+			throw new IllegalArgumentException(LanguageManager.get("invalid.group.create.data"));
+		}
 		StudentsGroup studentsGroup = new StudentsGroup(specialization, groupCode, description);
 		UUID id = studentsGroup.getId();
 		
@@ -30,10 +34,10 @@ public class StudentsGroupService {
 		return studentsGroup;
 	}
 	
-	public StudentsGroup addStudent(UUID groupId, UUID studentId) throws Exception {
+	public StudentsGroup addStudent(UUID groupId, UUID studentId) throws IllegalArgumentException {
 		StudentsGroup studentsGroup = studentsGroupRepository.get(groupId);
-		if(studentsGroup == null) {
-			throw new Exception(LanguageManager.get("error.group.notFound"));
+		if(studentsGroup == null || studentId == null) {
+			throw new IllegalArgumentException(LanguageManager.get("error.group.notFound"));
 		}
 		
 		studentsGroup.getStudentsInGroup().add(studentId);
@@ -42,10 +46,14 @@ public class StudentsGroupService {
 		return studentsGroup;
 	}
 	
-	public StudentsGroup edit(UUID id, String specialization, String groupCode, String description) throws Exception {
+	public StudentsGroup edit(UUID id, String specialization, String groupCode, String description) throws IllegalArgumentException {
 		StudentsGroup studentsGroup = studentsGroupRepository.get(id);
-		if(studentsGroup == null) {
-			throw new Exception(LanguageManager.get("error.group.notFound"));
+		if(studentsGroup == null || specialization == null || groupCode == null || description == null) {
+			throw new IllegalArgumentException(LanguageManager.get("error.group.notFound"));
+		}
+		if (specialization.trim().isEmpty() || specialization.isBlank() || groupCode.trim().isEmpty() || groupCode.isBlank()
+				|| description.trim().isEmpty() || description.isBlank()) {
+			throw new IllegalArgumentException(LanguageManager.get("invalid.group.edit.data"));
 		}
 	
 		studentsGroup.setDescription(description);

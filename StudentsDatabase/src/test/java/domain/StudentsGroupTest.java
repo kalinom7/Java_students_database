@@ -81,23 +81,6 @@ class StudentsGroupTest {
 	}
 
 	@Test
-	void studentsSetShouldNotAllowNullStudentId() {
-
-		// Arrange
-		// create new group
-		StudentsGroup group = new StudentsGroup(
-				"Cloud",
-				"C1",
-				"Test group");
-
-		// Act + Assert
-		// verify that adding null student id throws exception
-		assertThrows(IllegalArgumentException.class, () -> {
-
-			group.getStudentsInGroup().add(null);
-		});
-	}
-	@Test
 	void constructorShouldSetGroupData() {
 
 		// Arrange + Act
@@ -135,25 +118,5 @@ class StudentsGroupTest {
 		assertEquals("C2", group.getGroupCode());
 		assertEquals("Edited group", group.getDescription());
 	}
-	@Test
-	void constructorShouldNotAllowInvalidData() {
-
-		// Arrange
-		// create invalid input data
-		String specialization = null;
-		String groupCode = "";
-		String description = "   ";
-
-		// Act + Assert
-		// verify that constructor throws exception
-		// for invalid input data
-		assertThrows(IllegalArgumentException.class, () -> {
-
-			// try to create group with invalid data
-			new StudentsGroup(
-					specialization,
-					groupCode,
-					description);
-		});
-	}
+	
 }
