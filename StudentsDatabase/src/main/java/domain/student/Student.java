@@ -29,5 +29,17 @@ public class Student {
 	public UUID getId() {
 		return this.id;
 	}
+
+	public String getName() {
+		return name;
+	}
+
+	public String getSurname() {
+		return surname;
+	}
+
+	public String getAlbumNumber() {
+		return albumNumber;
+	}
 		
 }
