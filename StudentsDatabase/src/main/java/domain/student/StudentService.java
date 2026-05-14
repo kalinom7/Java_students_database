@@ -28,16 +28,12 @@ public class StudentService {
 		return student;
 	}
 
-	public Student edit(UUID id, String name, String surname, String albumNumber) {
-		Student student;
-		try {
-			student = this.get(id);
-		} catch (Exception e) {
-			e.printStackTrace();
-
-			return null;
+	public Student edit(UUID id, String name, String surname, String albumNumber) throws Exception {
+		Student student = studentRepository.get(id);
+		if (student == null) {
+			throw new Exception(LanguageManager.get("error.student.notFound"));
 		}
-
+		
 		student.setAlbumNumber(albumNumber);
 		student.setName(name);
 		student.setSurname(surname);

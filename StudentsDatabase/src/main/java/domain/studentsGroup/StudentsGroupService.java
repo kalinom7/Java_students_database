@@ -5,7 +5,7 @@ import java.util.Set;
 import java.util.UUID;
 import language.LanguageManager;
 
-//TODO: implement addStudent method that adds student to group
+
 public class StudentsGroupService {
 	private StudentsGroupRepository studentsGroupRepository;
 	
@@ -25,13 +25,16 @@ public class StudentsGroupService {
 		StudentsGroup studentsGroup = studentsGroupRepository.get(id);
 		if(studentsGroup == null) {
 			throw new Exception(LanguageManager.get("error.group.notFound"));
-
 		}
+		
 		return studentsGroup;
 	}
 	
-	public StudentsGroup addStudent(UUID groupId, UUID studentId) {
+	public StudentsGroup addStudent(UUID groupId, UUID studentId) throws Exception {
 		StudentsGroup studentsGroup = studentsGroupRepository.get(groupId);
+		if(studentsGroup == null) {
+			throw new Exception(LanguageManager.get("error.group.notFound"));
+		}
 		
 		studentsGroup.getStudentsInGroup().add(studentId);
 		studentsGroupRepository.save(groupId, studentsGroup);
@@ -39,15 +42,12 @@ public class StudentsGroupService {
 		return studentsGroup;
 	}
 	
-	public StudentsGroup edit(UUID id, String specialization, String groupCode, String description) {
-		StudentsGroup studentsGroup;
-		try {
-			studentsGroup = this.get(id);
-		} catch (Exception e) {
-			e.printStackTrace();
-
-			return null;
+	public StudentsGroup edit(UUID id, String specialization, String groupCode, String description) throws Exception {
+		StudentsGroup studentsGroup = studentsGroupRepository.get(id);
+		if(studentsGroup == null) {
+			throw new Exception(LanguageManager.get("error.group.notFound"));
 		}
+	
 		studentsGroup.setDescription(description);
 		studentsGroup.setGroupCode(groupCode);
 		studentsGroup.setSpecialization(specialization);
