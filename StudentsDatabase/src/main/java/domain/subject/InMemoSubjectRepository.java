@@ -21,8 +21,7 @@ public class InMemoSubjectRepository implements SubjectRepository{
 
 	@Override
 	public void delete(UUID id) {
-		// TODO Auto-generated method stub
-		
+		subjects.remove(id);
 	}
 
 }

@@ -214,7 +214,7 @@ class StudentServiceTest {
 		Student created = studentService.create("Jan", "Kowalski", "123456");
 		UUID id = created.getId();
 
-		studentService.delete(id);
+		studentService.remove(id);
 
 		// Assert
 		assertThrows(Exception.class, () -> studentService.get(id));
@@ -227,7 +227,7 @@ class StudentServiceTest {
 		UUID randomId = UUID.randomUUID();
 
 		// Act + Assert
-		assertDoesNotThrow(() -> studentService.delete(randomId));
+		assertDoesNotThrow(() -> studentService.remove(randomId));
 	}
 
 	@Test
@@ -237,7 +237,7 @@ class StudentServiceTest {
 		Student s1 = studentService.create("Jan", "Kowalski", "111111");
 		Student s2 = studentService.create("Anna", "Nowak", "222222");
 
-		studentService.delete(s1.getId());
+		studentService.remove(s1.getId());
 
 		// Assert
 		assertThrows(Exception.class, () -> studentService.get(s1.getId()));

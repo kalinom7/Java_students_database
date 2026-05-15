@@ -27,7 +27,6 @@ public class SubjectService {
 		if(subject == null) {
 			throw new Exception(LanguageManager.get("error.subject.notFound"));
 		}
-		
 		ArrayList<Criterium> criteriaList = subject.getCriteria();
 		Criterium criterium = new Criterium(criteriumName, maxPoints);
 

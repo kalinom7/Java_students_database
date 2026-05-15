@@ -67,7 +67,7 @@ public class StudentService {
 		return studentRepository;
 	}
 
-	public void delete(UUID id) {
+	public void remove(UUID id) {
 		studentRepository.delete(id);
 	}
 }
