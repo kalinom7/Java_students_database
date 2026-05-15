@@ -15,31 +15,19 @@ import java.awt.Font;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 import java.awt.Color;
+import javax.swing.JDesktopPane;
 
 public class MainFrame extends JFrame {
 
 	private static final long serialVersionUID = 1L;
 
-	/**
-	 * Launch the application.
-	 */
-	public static void main(String[] args) {
-		EventQueue.invokeLater(new Runnable() {
-			public void run() {
-				try {
-					MainFrame frame = new MainFrame();
-					frame.setVisible(true);
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-			}
-		});
-	}
+	
 
 	/**
 	 * Create the frame.
 	 */
 	public MainFrame() {
+		setVisible(true);
 		setTitle("Students managment system\r\n");
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setBounds(100, 100, 746, 449);
@@ -50,18 +38,24 @@ public class MainFrame extends JFrame {
 		
 		
 		JButton homeFrameButton = new JButton("Home");
+		homeFrameButton.setFocusable(false);
 		navigationButtonsPanel.add(homeFrameButton);
 		
 		JButton studentsFrameButton = new JButton("Students");
+		studentsFrameButton.setFocusable(false);
+		
 		navigationButtonsPanel.add(studentsFrameButton);
 		
 		JButton groupsFrame = new JButton("Groups");
+		groupsFrame.setFocusable(false);
 		navigationButtonsPanel.add(groupsFrame);
 		
 		JButton subjectsFrameButton = new JButton("Subjects");
+		subjectsFrameButton.setFocusable(false);
 		navigationButtonsPanel.add(subjectsFrameButton);
 		
 		JButton pointsFrame = new JButton("Points");
+		pointsFrame.setFocusable(false);
 		navigationButtonsPanel.add(pointsFrame);
 		
 		JPanel centerContentPanel = new JPanel();
@@ -70,22 +64,23 @@ public class MainFrame extends JFrame {
 		
 		JPanel homePanel = new JPanel();
 		homePanel.setBackground(new Color(255, 0, 128));
-		centerContentPanel.add(homePanel, "name_803779487436000");
+		centerContentPanel.add(homePanel, "homePanel");
 		
-		JPanel StudentsPanel = new JPanel();
-		centerContentPanel.add(StudentsPanel, "name_803784959660700");
+		JPanel studentsPanel = new JPanel();
+		centerContentPanel.add(studentsPanel, "studentsPanel");
 		
 		JPanel groupsPanel = new JPanel();
-		centerContentPanel.add(groupsPanel, "name_803802618644500");
+		centerContentPanel.add(groupsPanel, "groupsPanel");
 		
 		JPanel subjectsPanel = new JPanel();
-		centerContentPanel.add(subjectsPanel, "name_803805353930000");
+		centerContentPanel.add(subjectsPanel, "subjectsPanel");
 		
 		JPanel pointsPanel = new JPanel();
-		centerContentPanel.add(pointsPanel, "name_803808546027900");
+		centerContentPanel.add(pointsPanel, "pointsPanel");
 		
 		
-		homeFrameButton.addActionListener( e -> ((CardLayout) centerContentPanel.getLayout()).show(centerContentPanel, "home"));
+		homeFrameButton.addActionListener( e -> ((CardLayout) centerContentPanel.getLayout()).show(centerContentPanel, "homePanel"));
+		studentsFrameButton.addActionListener( e -> ((CardLayout) centerContentPanel.getLayout()).show(centerContentPanel, "studentsPanel"));
 
 	}
 

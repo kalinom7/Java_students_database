@@ -17,7 +17,7 @@ public class App {
 		SwingUtilities.invokeLater(new Runnable() {
             @Override
             public void run() {
-                new MainFrame();
+                MainFrame frame = new MainFrame();
             }
         });
     }
