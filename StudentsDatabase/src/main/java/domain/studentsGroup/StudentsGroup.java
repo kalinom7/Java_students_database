@@ -1,11 +1,18 @@
 package domain.studentsGroup;
 
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
 
-import domain.student.Student;
+/*
+ * Represents a group of students in the system.
+ *
+ * The class stores basic group information and
+ * a set of student identifiers assigned to the group.
+ *
+ * The identifier is generated automatically when a new StudentsGroup object is created.
+ * 
+ */
 
 public class StudentsGroup {
 	private UUID id;
@@ -15,10 +22,13 @@ public class StudentsGroup {
 	private Set<UUID> studentsInGroup;
 	
 	
-	public Set<UUID> getStudentsInGroup() {
-		return studentsInGroup;
-	}
-
+	/**
+	 * Creates a new StudentsGroup object.
+	 *
+	 * @param specialization group's specialization
+	 * @param groupCode group's code
+	 * @param description group's description
+	 */
 	public StudentsGroup(String specialization, String groupCode, String description) {
 		this.id = UUID.randomUUID(); 
 		this.specialization = specialization;
@@ -27,10 +37,16 @@ public class StudentsGroup {
 		this.studentsInGroup = new HashSet<>();
 	}
 	
+	
+	/*
+	 * GETTERS
+	 */
+	public Set<UUID> getStudentsInGroup() {
+		return studentsInGroup;
+	}
 	public UUID getId() {
 		return id;
 	}
-	//GETTERS
 	public String getSpecialization() {
 		return specialization;
 	}
@@ -42,7 +58,10 @@ public class StudentsGroup {
 	public String getDescription() {
 		return description;
 	}
-	//SETTERS
+	
+	/*
+	 * SETTERS
+	 */
 	public void setSpecialization(String specialization) {
 		this.specialization = specialization;
 	}
@@ -50,7 +69,7 @@ public class StudentsGroup {
 	public void setGroupCode(String groupCode) {
 		this.groupCode = groupCode;
 	}
-
+	
 	public void setDescription(String description) {
 		this.description = description;
 	}

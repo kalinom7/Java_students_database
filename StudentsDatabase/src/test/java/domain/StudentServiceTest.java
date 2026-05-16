@@ -148,7 +148,7 @@ class StudentServiceTest {
 		// Act + Assert
 		Exception exception = assertThrows(Exception.class, () -> studentService.get(randomId));
 
-		assertEquals("Student not found", exception.getMessage());
+		assertEquals("Student not found for the given ID.", exception.getMessage());
 	}
 
 	@Test
