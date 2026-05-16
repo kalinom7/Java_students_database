@@ -452,4 +452,269 @@ class SubjectServiceTest {
 		assertThrows(Exception.class,
 				() -> service.addStudentScore(nonExistingSubjectId, studentId, 10, "Test 1"));
 	}
+	
+	@Test
+	void editStudentScore_shouldUpdatePoints() {
+
+	    // Arrange
+	    InMemoSubjectRepository repository = new InMemoSubjectRepository();
+	    SubjectService service = new SubjectService(repository);
+
+	    UUID subjectId = UUID.randomUUID();
+	    UUID studentId = UUID.randomUUID();
+
+	    Subject subject = new Subject("Java");
+	    subject.getCriteria().add(new Criterium("Test 1", 20));
+	    subject.getStudentsScore().put(studentId, new ArrayList<CriteriumStudentScore>());
+
+	    repository.save(subjectId, subject);
+	    service.addStudentScore(subjectId, studentId, 5, "Test 1");
+
+	    // Act
+	    service.editStudentScore(subjectId, studentId, 8, "Test 1");
+
+	    // Assert
+	    assertEquals(8, subject.getStudentsScore().get(studentId).get(0).getStudentPoints());
+	}
+
+	@Test
+	void editStudentScore_shouldAllowSettingPointsToZero() {
+
+	    // Arrange
+	    InMemoSubjectRepository repository = new InMemoSubjectRepository();
+	    SubjectService service = new SubjectService(repository);
+
+	    UUID subjectId = UUID.randomUUID();
+	    UUID studentId = UUID.randomUUID();
+
+	    Subject subject = new Subject("Java");
+	    subject.getCriteria().add(new Criterium("Test 1", 20));
+	    subject.getStudentsScore().put(studentId, new ArrayList<CriteriumStudentScore>());
+
+	    repository.save(subjectId, subject);
+	    service.addStudentScore(subjectId, studentId, 5, "Test 1");
+
+	    // Act
+	    service.editStudentScore(subjectId, studentId, 0, "Test 1");
+
+	    // Assert
+	    assertEquals(0, subject.getStudentsScore().get(studentId).get(0).getStudentPoints());
+	}
+
+	@Test
+	void editStudentScore_shouldAllowSettingPointsToMax() {
+
+	    // Arrange
+	    InMemoSubjectRepository repository = new InMemoSubjectRepository();
+	    SubjectService service = new SubjectService(repository);
+
+	    UUID subjectId = UUID.randomUUID();
+	    UUID studentId = UUID.randomUUID();
+
+	    Subject subject = new Subject("Java");
+	    subject.getCriteria().add(new Criterium("Test 1", 20));
+	    subject.getStudentsScore().put(studentId, new ArrayList<CriteriumStudentScore>());
+
+	    repository.save(subjectId, subject);
+	    service.addStudentScore(subjectId, studentId, 5, "Test 1");
+
+	    // Act
+	    service.editStudentScore(subjectId, studentId, 20, "Test 1");
+
+	    // Assert
+	    assertEquals(20, subject.getStudentsScore().get(studentId).get(0).getStudentPoints());
+	}
+
+	@Test
+	void editStudentScore_shouldNotAffectOtherCriteria() {
+
+	    // Arrange
+	    InMemoSubjectRepository repository = new InMemoSubjectRepository();
+	    SubjectService service = new SubjectService(repository);
+
+	    UUID subjectId = UUID.randomUUID();
+	    UUID studentId = UUID.randomUUID();
+
+	    Subject subject = new Subject("Java");
+	    subject.getCriteria().add(new Criterium("Test 1", 20));
+	    subject.getCriteria().add(new Criterium("Test 2", 20));
+	    subject.getStudentsScore().put(studentId, new ArrayList<CriteriumStudentScore>());
+
+	    repository.save(subjectId, subject);
+	    service.addStudentScore(subjectId, studentId, 5, "Test 1");
+	    service.addStudentScore(subjectId, studentId, 15, "Test 2");
+
+	    // Act
+	    service.editStudentScore(subjectId, studentId, 8, "Test 1");
+
+	    // Assert
+	    CriteriumStudentScore test2Score = subject.getStudentsScore()
+	            .get(studentId)
+	            .stream()
+	            .filter(s -> s.getName().equals("Test 2"))
+	            .findFirst()
+	            .orElse(null);
+	    assertNotNull(test2Score);
+	    assertEquals(15, test2Score.getStudentPoints());
+	}
+
+	@Test
+	void editStudentScore_shouldThrowWhenSubjectNotFound() {
+
+	    // Arrange
+	    InMemoSubjectRepository repository = new InMemoSubjectRepository();
+	    SubjectService service = new SubjectService(repository);
+
+	    UUID nonExistentSubjectId = UUID.randomUUID();
+	    UUID studentId = UUID.randomUUID();
+
+	    // Act & Assert
+	    assertThrows(IllegalArgumentException.class,
+	            () -> service.editStudentScore(nonExistentSubjectId, studentId, 5, "Test 1"));
+	}
+
+	@Test
+	void editStudentScore_shouldThrowWhenPointsAreNegative() {
+
+	    // Arrange
+	    InMemoSubjectRepository repository = new InMemoSubjectRepository();
+	    SubjectService service = new SubjectService(repository);
+
+	    UUID subjectId = UUID.randomUUID();
+	    UUID studentId = UUID.randomUUID();
+
+	    Subject subject = new Subject("Java");
+	    subject.getCriteria().add(new Criterium("Test 1", 20));
+	    subject.getStudentsScore().put(studentId, new ArrayList<CriteriumStudentScore>());
+
+	    repository.save(subjectId, subject);
+	    service.addStudentScore(subjectId, studentId, 5, "Test 1");
+
+	    // Act & Assert
+	    assertThrows(IllegalArgumentException.class,
+	            () -> service.editStudentScore(subjectId, studentId, -1, "Test 1"));
+	}
+
+	@Test
+	void editStudentScore_shouldThrowWhenPointsExceedMax() {
+
+	    // Arrange
+	    InMemoSubjectRepository repository = new InMemoSubjectRepository();
+	    SubjectService service = new SubjectService(repository);
+
+	    UUID subjectId = UUID.randomUUID();
+	    UUID studentId = UUID.randomUUID();
+
+	    Subject subject = new Subject("Java");
+	    subject.getCriteria().add(new Criterium("Test 1", 20));
+	    subject.getStudentsScore().put(studentId, new ArrayList<CriteriumStudentScore>());
+
+	    repository.save(subjectId, subject);
+	    service.addStudentScore(subjectId, studentId, 5, "Test 1");
+
+	    // Act & Assert
+	    assertThrows(IllegalArgumentException.class,
+	            () -> service.editStudentScore(subjectId, studentId, 21, "Test 1"));
+	}
+
+	@Test
+	void removeStudentScore_shouldRemoveScoreForMatchingCriterium() {
+
+	    // Arrange
+	    InMemoSubjectRepository repository = new InMemoSubjectRepository();
+	    SubjectService service = new SubjectService(repository);
+
+	    UUID subjectId = UUID.randomUUID();
+	    UUID studentId = UUID.randomUUID();
+
+	    Subject subject = new Subject("Java");
+	    subject.getCriteria().add(new Criterium("Test 1", 20));
+	    subject.getStudentsScore().put(studentId, new ArrayList<CriteriumStudentScore>());
+
+	    repository.save(subjectId, subject);
+	    service.addStudentScore(subjectId, studentId, 5, "Test 1");
+
+	    // Act
+	    service.removeStudentScore(subjectId, studentId, "Test 1");
+
+	    // Assert
+	    assertFalse(subject.getStudentsScore().get(studentId)
+	            .stream()
+	            .anyMatch(s -> s.getName().equals("Test 1")));
+	}
+
+	@Test
+	void removeStudentScore_shouldLeaveScoresListEmptyWhenLastScoreRemoved() {
+
+	    // Arrange
+	    InMemoSubjectRepository repository = new InMemoSubjectRepository();
+	    SubjectService service = new SubjectService(repository);
+
+	    UUID subjectId = UUID.randomUUID();
+	    UUID studentId = UUID.randomUUID();
+
+	    Subject subject = new Subject("Java");
+	    subject.getCriteria().add(new Criterium("Test 1", 20));
+	    subject.getStudentsScore().put(studentId, new ArrayList<CriteriumStudentScore>());
+
+	    repository.save(subjectId, subject);
+	    service.addStudentScore(subjectId, studentId, 5, "Test 1");
+
+	    // Act
+	    service.removeStudentScore(subjectId, studentId, "Test 1");
+
+	    // Assert
+	    assertTrue(subject.getStudentsScore().get(studentId).isEmpty());
+	}
+
+	@Test
+	void removeStudentScore_shouldNotAffectOtherCriteriaScores() {
+
+	    // Arrange
+	    InMemoSubjectRepository repository = new InMemoSubjectRepository();
+	    SubjectService service = new SubjectService(repository);
+
+	    UUID subjectId = UUID.randomUUID();
+	    UUID studentId = UUID.randomUUID();
+
+	    Subject subject = new Subject("Java");
+	    subject.getCriteria().add(new Criterium("Test 1", 20));
+	    subject.getCriteria().add(new Criterium("Test 2", 20));
+	    subject.getStudentsScore().put(studentId, new ArrayList<CriteriumStudentScore>());
+
+	    repository.save(subjectId, subject);
+	    service.addStudentScore(subjectId, studentId, 5, "Test 1");
+	    service.addStudentScore(subjectId, studentId, 15, "Test 2");
+
+	    // Act
+	    service.removeStudentScore(subjectId, studentId, "Test 1");
+
+	    // Assert
+	    assertTrue(subject.getStudentsScore().get(studentId)
+	            .stream()
+	            .anyMatch(s -> s.getName().equals("Test 2")));
+	}
+
+	@Test
+	void removeStudentScore_shouldNotThrowWhenCriteriumNameNotFound() {
+
+	    // Arrange
+	    InMemoSubjectRepository repository = new InMemoSubjectRepository();
+	    SubjectService service = new SubjectService(repository);
+
+	    UUID subjectId = UUID.randomUUID();
+	    UUID studentId = UUID.randomUUID();
+
+	    Subject subject = new Subject("Java");
+	    subject.getCriteria().add(new Criterium("Test 1", 20));
+	    subject.getStudentsScore().put(studentId, new ArrayList<CriteriumStudentScore>());
+
+	    repository.save(subjectId, subject);
+	    service.addStudentScore(subjectId, studentId, 5, "Test 1");
+
+	    // Act & Assert
+	    // passing non-existent criterium name does not throw — removeIf silently skips it
+	    assertDoesNotThrow(
+	            () -> service.removeStudentScore(subjectId, studentId, "NonExistentCriterium"));
+	}
 }

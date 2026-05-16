@@ -289,8 +289,6 @@ class StudentsGroupServiceTest {
         assertFalse(group.getStudentsInGroup().contains(studentId));
     }
 
-
-
     @Test
     void removeStudent_shouldNotAffectOtherStudentsInGroup() {
         // Arrange
