@@ -275,6 +275,128 @@ class StudentsGroupServiceTest {
 		});
 	}
 
+    @Test
+    void removeStudent_shouldRemoveStudentFromGroup() {
+        // Arrange
+        StudentsGroup group = service.create("Cloud", "C1", "Test group");
+        UUID studentId = UUID.randomUUID();
+        service.addStudent(group.getId(), studentId);
+
+        // Act
+        service.removeStudent(studentId, group.getId());
+
+        // Assert
+        assertFalse(group.getStudentsInGroup().contains(studentId));
+    }
+
+
+
+    @Test
+    void removeStudent_shouldNotAffectOtherStudentsInGroup() {
+        // Arrange
+        StudentsGroup group = service.create("Cloud", "C1", "Test group");
+        UUID studentToRemove = UUID.randomUUID();
+        UUID studentToKeep = UUID.randomUUID();
+        service.addStudent(group.getId(), studentToRemove);
+        service.addStudent(group.getId(), studentToKeep);
+
+        // Act
+        service.removeStudent(studentToRemove, group.getId());
+
+        // Assert
+        assertFalse(group.getStudentsInGroup().contains(studentToRemove));
+        assertTrue(group.getStudentsInGroup().contains(studentToKeep));
+    }
+
+    @Test
+    void removeStudent_shouldLeaveGroupEmptyWhenLastStudentRemoved() {
+        // Arrange
+        StudentsGroup group = service.create("Cloud", "C1", "Test group");
+        UUID studentId = UUID.randomUUID();
+        service.addStudent(group.getId(), studentId);
+
+        // Act
+        service.removeStudent(studentId, group.getId());
+
+        // Assert
+        assertTrue(group.getStudentsInGroup().isEmpty());
+    }
+
+
+    @Test
+    void removeStudent_shouldThrowWhenGroupNotFound() {
+        // Arrange
+        UUID nonExistentGroupId = UUID.randomUUID();
+        UUID studentId = UUID.randomUUID();
+
+        // Act & Assert
+        assertThrows(IllegalArgumentException.class,
+                () -> service.removeStudent(studentId, nonExistentGroupId));
+    }
+
+    @Test
+    void removeStudent_shouldThrowWhenStudentNotInGroup() {
+        // Arrange
+        StudentsGroup group = service.create("Cloud", "C1", "Test group");
+        UUID studentId = UUID.randomUUID();
+
+        // Act & Assert
+        assertThrows(IllegalArgumentException.class,
+                () -> service.removeStudent(studentId, group.getId()));
+    }
+
+    @Test
+    void removeStudent_shouldThrowWhenRemovingSameStudentTwice() {
+        // Arrange
+        StudentsGroup group = service.create("Cloud", "C1", "Test group");
+        UUID studentId = UUID.randomUUID();
+        service.addStudent(group.getId(), studentId);
+        service.removeStudent(studentId, group.getId());
+
+        // Act & Assert
+        assertThrows(IllegalArgumentException.class,
+                () -> service.removeStudent(studentId, group.getId()));
+    }
+
+    @Test
+    void removeStudent_shouldThrowWhenStudentIdIsNull() {
+        // Arrange
+        StudentsGroup group = service.create("Cloud", "C1", "Test group");
+
+        // Act & Assert
+        assertThrows(IllegalArgumentException.class,
+                () -> service.removeStudent(null, group.getId()));
+    }
+
+
+    @Test
+    void removeStudent_shouldThrowCorrectMessageWhenStudentNotInGroup() {
+        // Arrange
+        StudentsGroup group = service.create("Cloud", "C1", "Test group");
+        UUID studentId = UUID.randomUUID();
+
+        // Act
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
+                () -> service.removeStudent(studentId, group.getId()));
+
+        // Assert
+        assertEquals(LanguageManager.get("error.studentRemove.in.group.not.found"), exception.getMessage());
+    }
+
+    @Test
+    void removeStudent_shouldThrowCorrectMessageWhenGroupNotFound() {
+        // Arrange
+        UUID nonExistentGroupId = UUID.randomUUID();
+        UUID studentId = UUID.randomUUID();
+
+        // Act
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
+                () -> service.removeStudent(studentId, nonExistentGroupId));
+
+        // Assert
+        assertEquals(LanguageManager.get("error.group.notFound"), exception.getMessage());
+    }
+
 	@Test
 	void editShouldNotAllowNullSpecialization() throws Exception {
 
