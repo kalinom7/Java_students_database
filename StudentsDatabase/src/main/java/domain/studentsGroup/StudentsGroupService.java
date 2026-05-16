@@ -64,6 +64,14 @@ public class StudentsGroupService {
 		return studentsGroup;
 	}
 	
+	public void removeStudent(UUID studentId, UUID groupId) throws Exception {
+		StudentsGroup studentsGroup = studentsGroupRepository.get(groupId);
+		if(!studentsGroup.getStudentsInGroup().remove(studentId)) {
+			throw new Exception(LanguageManager.get("error.studentRemove.in.group.not.found"));
+		}
+		studentsGroupRepository.save(groupId, studentsGroup);
+	}
+	
 	public void delete(UUID id) {
 		studentsGroupRepository.delete(id);
 	}
