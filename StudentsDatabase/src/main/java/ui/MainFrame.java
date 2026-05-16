@@ -1,87 +1,112 @@
 package ui;
 
-import java.awt.EventQueue;
-
 import javax.swing.JFrame;
 import javax.swing.JPanel;
-import javax.swing.border.EmptyBorder;
 import java.awt.CardLayout;
 import java.awt.BorderLayout;
 import javax.swing.JButton;
-import java.awt.GridLayout;
+import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
-import javax.swing.JTextArea;
-import java.awt.Font;
-import java.awt.event.ActionListener;
-import java.awt.event.ActionEvent;
 import java.awt.Color;
-import javax.swing.JDesktopPane;
+import domain.student.StudentRepository;
+import domain.student.InMemoStudentRepository;
+import domain.student.StudentService;
 
 public class MainFrame extends JFrame {
 
 	private static final long serialVersionUID = 1L;
 
-	
-
-	/**
-	 * Create the frame.
-	 */
 	public MainFrame() {
-		setVisible(true);
+		StudentRepository studentRepository = new InMemoStudentRepository();
+		StudentService studentService = new StudentService(studentRepository);
+		
 		setTitle("Students managment system\r\n");
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setBounds(100, 100, 746, 449);
 		
+		
 		JPanel navigationButtonsPanel = new JPanel();
 		getContentPane().add(navigationButtonsPanel, BorderLayout.NORTH);
+		navigationButtonsPanel.setBackground(new Color(222,218,255));
 		navigationButtonsPanel.setLayout(new BoxLayout(navigationButtonsPanel, BoxLayout.X_AXIS));
-		
+		navigationButtonsPanel.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
 		
 		JButton homeFrameButton = new JButton("Home");
 		homeFrameButton.setFocusable(false);
+		homeFrameButton.setBackground(new Color(248, 211, 175));
 		navigationButtonsPanel.add(homeFrameButton);
 		
 		JButton studentsFrameButton = new JButton("Students");
 		studentsFrameButton.setFocusable(false);
-		
+		studentsFrameButton.setBackground(new Color(248, 211, 175));
 		navigationButtonsPanel.add(studentsFrameButton);
 		
-		JButton groupsFrame = new JButton("Groups");
-		groupsFrame.setFocusable(false);
-		navigationButtonsPanel.add(groupsFrame);
+		JButton groupsFrameButton = new JButton("Groups");
+		groupsFrameButton.setFocusable(false);
+		groupsFrameButton.setBackground(new Color(248, 211, 175));
+		navigationButtonsPanel.add(groupsFrameButton);
 		
 		JButton subjectsFrameButton = new JButton("Subjects");
 		subjectsFrameButton.setFocusable(false);
+		subjectsFrameButton.setBackground(new Color(248, 211, 175));
 		navigationButtonsPanel.add(subjectsFrameButton);
 		
-		JButton pointsFrame = new JButton("Points");
-		pointsFrame.setFocusable(false);
-		navigationButtonsPanel.add(pointsFrame);
+		JButton pointsFrameButton = new JButton("Points");
+		pointsFrameButton.setFocusable(false);
+		pointsFrameButton.setBackground(new Color(248, 211, 175));
+		navigationButtonsPanel.add(pointsFrameButton);
 		
 		JPanel centerContentPanel = new JPanel();
 		getContentPane().add(centerContentPanel, BorderLayout.CENTER);
 		centerContentPanel.setLayout(new CardLayout(0, 0));
 		
-		JPanel homePanel = new JPanel();
-		homePanel.setBackground(new Color(255, 0, 128));
+		//////////////////////////////////////////////////////
+		//////////////////////////////////////////////////////
+		// HOME PANEL
+		
+		HomePanel homePanel = new HomePanel();
 		centerContentPanel.add(homePanel, "homePanel");
 		
-		JPanel studentsPanel = new JPanel();
+		//////////////////////////////////////////////////////
+		//////////////////////////////////////////////////////
+		// STUDENTS PANEL
+		
+		StudentsPanel studentsPanel = new StudentsPanel(studentService);
 		centerContentPanel.add(studentsPanel, "studentsPanel");
 		
-		JPanel groupsPanel = new JPanel();
+		//////////////////////////////////////////////////////
+		//////////////////////////////////////////////////////
+		// GROUPS PANEL
+
+		GroupsPanel groupsPanel = new GroupsPanel();
 		centerContentPanel.add(groupsPanel, "groupsPanel");
 		
-		JPanel subjectsPanel = new JPanel();
+		//////////////////////////////////////////////////////
+		//////////////////////////////////////////////////////
+		// SUBJECTS PANEL
+		SubjectsPanel subjectsPanel = new SubjectsPanel();
 		centerContentPanel.add(subjectsPanel, "subjectsPanel");
 		
-		JPanel pointsPanel = new JPanel();
+		
+		//////////////////////////////////////////////////////
+		//////////////////////////////////////////////////////
+		// POINTS PANEL
+		PointsPanel pointsPanel = new PointsPanel();
 		centerContentPanel.add(pointsPanel, "pointsPanel");
+		
+		
 		
 		
 		homeFrameButton.addActionListener( e -> ((CardLayout) centerContentPanel.getLayout()).show(centerContentPanel, "homePanel"));
 		studentsFrameButton.addActionListener( e -> ((CardLayout) centerContentPanel.getLayout()).show(centerContentPanel, "studentsPanel"));
-
+		groupsFrameButton.addActionListener( e -> ((CardLayout) centerContentPanel.getLayout()).show(centerContentPanel, "groupsPanel"));
+		subjectsFrameButton.addActionListener( e -> ((CardLayout) centerContentPanel.getLayout()).show(centerContentPanel, "subjectsPanel"));
+		pointsFrameButton.addActionListener( e -> ((CardLayout) centerContentPanel.getLayout()).show(centerContentPanel, "pointsPanel"));
+		setVisible(true);
+		
+		
+		
+	
 	}
 
 }
