@@ -4,8 +4,6 @@ import java.util.ArrayList;
 import java.util.Map;
 import java.util.UUID;
 
-import org.javatuples.Pair;
-
 import language.LanguageManager;
 
 public class SubjectService {
@@ -22,10 +20,10 @@ public class SubjectService {
 		return subject;
 	}
 
-	public Subject addCriterium(UUID subjectId, String criteriumName, int maxPoints) throws Exception {
+	public Subject addCriterium(UUID subjectId, String criteriumName, int maxPoints) {
 		Subject subject = subjectRepository.get(subjectId);
 		if(subject == null) {
-			throw new Exception(LanguageManager.get("error.subject.notFound"));
+			throw new IllegalArgumentException(LanguageManager.get("error.subject.notFound"));
 		}
 		
 		ArrayList<Criterium> criteriaList = subject.getCriteria();
@@ -37,10 +35,10 @@ public class SubjectService {
 		return subject;
 	}
 	
-	public Subject removeCriterium(UUID subjectId, String criteriumName) throws Exception {
+	public Subject removeCriterium(UUID subjectId, String criteriumName) {
 		Subject subject = subjectRepository.get(subjectId);
 		if(subject == null) {
-			throw new Exception(LanguageManager.get("error.subject.notFound"));
+			throw new IllegalArgumentException(LanguageManager.get("error.subject.notFound"));
 		}
 		
 		ArrayList<Criterium> criteriaList = subject.getCriteria();
@@ -52,10 +50,10 @@ public class SubjectService {
 		return subject;
 	}
 	 
-	public Subject editCriterium(UUID subjectId,String previousName, String criteriumName, int maxPoints) throws Exception {
+	public Subject editCriterium(UUID subjectId,String previousName, String criteriumName, int maxPoints) {
 		Subject subject = subjectRepository.get(subjectId);
 		if(subject == null) {
-			throw new Exception(LanguageManager.get("error.subject.notFound"));
+			throw new IllegalArgumentException(LanguageManager.get("error.subject.notFound"));
 		}
 		
 		ArrayList<Criterium> criteriaList = subject.getCriteria();
@@ -72,10 +70,10 @@ public class SubjectService {
 		return subject;
 	}
 	
-	public Subject editSubjectName(UUID subjectId, String newName) throws Exception {
+	public Subject editSubjectName(UUID subjectId, String newName) {
 		Subject subject = subjectRepository.get(subjectId);
 		if(subject == null) {
-			throw new Exception(LanguageManager.get("error.subject.notFound"));
+			throw new IllegalArgumentException(LanguageManager.get("error.subject.notFound"));
 		}
 		
 		subject.setName(newName);
@@ -93,13 +91,13 @@ public class SubjectService {
 		
 		return copyToRestore;
 	}
-	public Subject addStudentScore(UUID subjectId, UUID studentId, int points, String criteriumName) throws Exception {
+	public Subject addStudentScore(UUID subjectId, UUID studentId, int points, String criteriumName) {
 		Subject subject = subjectRepository.get(subjectId);
 		if(subject == null) {
-			throw new Exception(LanguageManager.get("error.subject.notFound"));
+			throw new IllegalArgumentException(LanguageManager.get("error.subject.notFound"));
 		}
 		if(points < 0) {
-			throw new Exception(LanguageManager.get("error.score.points.negative"));
+			throw new IllegalArgumentException(LanguageManager.get("error.score.points.negative"));
 		}
 		
 		Map<UUID, ArrayList<CriteriumStudentScore>> subjectStudentsScore = subject.getStudentsScore();
@@ -113,7 +111,7 @@ public class SubjectService {
 		}
 		
 		if(points > maxPointsForCriterium) {
-			throw new Exception(LanguageManager.get("error.studentScore.greater.than.maxPoints"));
+			throw new IllegalArgumentException(LanguageManager.get("error.score.points.exceedsMax"));
 			
 		}
 		
@@ -126,13 +124,13 @@ public class SubjectService {
 		return subject;
 	}
 	
-	public Subject editStudentScore(UUID subjectId, UUID studentId, int points, String criteriumName) throws Exception {
+	public Subject editStudentScore(UUID subjectId, UUID studentId, int points, String criteriumName) {
 		Subject subject = subjectRepository.get(subjectId);
 		if(subject == null) {
-			throw new Exception(LanguageManager.get("error.subject.notFound"));
+			throw new IllegalArgumentException(LanguageManager.get("error.subject.notFound"));
 		}
 		if(points < 0) {
-			throw new Exception(LanguageManager.get("error.score.points.negative"));
+			throw new IllegalArgumentException(LanguageManager.get("error.score.points.negative"));
 		}
 		int maxPointsForCriterium = 0;
 		for (Criterium criterium : subject.getCriteria()) {
@@ -142,7 +140,7 @@ public class SubjectService {
 		    }
 		}
 		if(points > maxPointsForCriterium) {
-			throw new Exception(LanguageManager.get("error.studentScore.greater.than.maxPoints"));
+			throw new IllegalArgumentException(LanguageManager.get("error.score.points.exceedsMax"));
 			
 		}
 		Map<UUID, ArrayList<CriteriumStudentScore>> subjectStudentsScore = subject.getStudentsScore();
