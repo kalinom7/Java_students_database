@@ -24,6 +24,7 @@ public class Subject {
 
 	public Subject(String name) {
 		this.name = name;
+		this.id =  UUID.randomUUID();
 		this.criteria = new  ArrayList<>();
 		this.studentsScore = new HashMap<>();
 	}

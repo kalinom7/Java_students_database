@@ -98,6 +98,9 @@ public class SubjectService {
 		if(subject == null) {
 			throw new Exception(LanguageManager.get("error.subject.notFound"));
 		}
+		if(points < 0) {
+			throw new Exception(LanguageManager.get("error.score.points.negative"));
+		}
 		
 		Map<UUID, ArrayList<CriteriumStudentScore>> subjectStudentsScore = subject.getStudentsScore();
 		
@@ -119,6 +122,45 @@ public class SubjectService {
 		arrayStudentScore.add(studentScore);
 		subjectStudentsScore.put(studentId, arrayStudentScore);
 		
+		subjectRepository.save(subjectId, subject);
+		return subject;
+	}
+	
+	public Subject editStudentScore(UUID subjectId, UUID studentId, int points, String criteriumName) throws Exception {
+		Subject subject = subjectRepository.get(subjectId);
+		if(subject == null) {
+			throw new Exception(LanguageManager.get("error.subject.notFound"));
+		}
+		if(points < 0) {
+			throw new Exception(LanguageManager.get("error.score.points.negative"));
+		}
+		int maxPointsForCriterium = 0;
+		for (Criterium criterium : subject.getCriteria()) {
+		    if (criterium.getName().equals(criteriumName)) {
+		        maxPointsForCriterium = criterium.getMaxPoints();
+		        break;
+		    }
+		}
+		if(points > maxPointsForCriterium) {
+			throw new Exception(LanguageManager.get("error.studentScore.greater.than.maxPoints"));
+			
+		}
+		Map<UUID, ArrayList<CriteriumStudentScore>> subjectStudentsScore = subject.getStudentsScore();
+		for(CriteriumStudentScore studentScore : subjectStudentsScore.get(studentId)) {
+			if(studentScore.getName().equals(criteriumName)) {
+				studentScore.setStudentPoints(points);
+			}
+		}
+		subjectRepository.save(subjectId, subject);
+		return subject;
+	}
+	public Subject removeStudentScore(UUID subjectId, UUID studentId, String criteriumName) {
+		Subject subject = subjectRepository.get(subjectId);
+		Map<UUID, ArrayList<CriteriumStudentScore>> subjectStudentsScore = subject.getStudentsScore();
+		ArrayList<CriteriumStudentScore> arrayStudentScore = subjectStudentsScore.get(studentId);
+		
+		arrayStudentScore.removeIf( (criterium) -> criterium.getName().equals(criteriumName));
+	
 		subjectRepository.save(subjectId, subject);
 		return subject;
 	}
