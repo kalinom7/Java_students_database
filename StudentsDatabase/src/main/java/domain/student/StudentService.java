@@ -35,26 +35,26 @@ public class StudentService {
 	 * @return created student object
 	 * @throws Exception when provided data is invalid
 	 */
-	public Student create(String name, String surname, String albumNumber) throws Exception {
+	public Student create(String name, String surname, String albumNumber){
 		// Validate empty or blank input values
-		if (name.trim().isEmpty() || name.isBlank() || surname.trim().isEmpty() || surname.isBlank()
-				|| albumNumber.trim().isEmpty() || albumNumber.isBlank()) {
-			throw new Exception(LanguageManager.get("invalid.student.create.data"));
+		if (name.trim().isEmpty() || surname.trim().isEmpty() 
+				|| albumNumber.trim().isEmpty()) {
+			throw new IllegalArgumentException(LanguageManager.get("invalid.student.create.data.blank"));
 		}
 	
 		// Validate that album number contains digits only
 		if (!albumNumber.matches("\\d+")) {
-			throw new Exception(LanguageManager.get("invalid.student.create.data"));
+			throw new IllegalArgumentException(LanguageManager.get("invalid.student.create.data.albumNumber"));
 		}
 		
 		// Validate that name does not contain digits
 		if (name.matches(".*\\d.*")) {
-			throw new Exception(LanguageManager.get("invalid.student.create.data"));
+			throw new IllegalArgumentException(LanguageManager.get("invalid.student.create.data.name"));
 		}
 		
 		// Validate that surname does not contain digits
 		if (surname.matches(".*\\d.*")) {
-			throw new Exception(LanguageManager.get("invalid.student.create.data"));
+			throw new IllegalArgumentException(LanguageManager.get("invalid.student.create.data.surname"));
 		}
 
 		Student student = new Student(name.trim(), surname.trim(), albumNumber.trim());
@@ -72,10 +72,10 @@ public class StudentService {
 	 * @throws Exception when student does not exist
 	 */
 	public Student get(UUID id) throws Exception {
-		Student student = studentRepository.get(id);
-		if (student == null) {
-			throw new Exception(LanguageManager.get("error.student.notFound"));
-		}
+	    Student student = studentRepository.get(id);
+	    if (student == null) {
+	        throw new IllegalArgumentException(LanguageManager.get("error.student.notFound"));
+	    }
 
 		return student;
 	}
@@ -91,10 +91,10 @@ public class StudentService {
 	 * @throws Exception when student does not exist
 	 */
 	public Student edit(UUID id, String name, String surname, String albumNumber) throws Exception {
-		Student student = studentRepository.get(id);
-		if (student == null) {
-			throw new Exception(LanguageManager.get("error.student.notFound"));
-		}
+	    Student student = studentRepository.get(id);
+	    if (student == null) {
+	        throw new IllegalArgumentException(LanguageManager.get("error.student.notFound"));
+	    }
 
 		student.setAlbumNumber(albumNumber);
 		student.setName(name);
