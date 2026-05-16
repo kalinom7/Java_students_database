@@ -7,6 +7,7 @@ import java.util.UUID;
  *
  * Defines methods for storing, retrieving
  * and removing students group objects.
+ * 
  */ 
 
 public interface StudentsGroupRepository {

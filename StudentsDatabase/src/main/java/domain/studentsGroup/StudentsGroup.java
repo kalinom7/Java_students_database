@@ -11,6 +11,7 @@ import java.util.UUID;
  * a set of student identifiers assigned to the group.
  *
  * The identifier is generated automatically when a new StudentsGroup object is created.
+ * 
  */
 
 public class StudentsGroup {
